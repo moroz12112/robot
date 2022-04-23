@@ -48,63 +48,71 @@ UART_HandleTypeDef huart3;
 
 FIFO_One_str One_str;
 
-//Pos_Servo Mas_Servo[6]={0};
-
 
 Pos_Servo ServoA={
 		.letter_Servo='A',
-		.htim=SERVO_A_HTIM,
-		.pinEn = SERVO_A_CHANNEL,
+		.htim=SERVO_A_HTIM1,
+		.pinEn = SERVO_A_CHANNEL1,
 		.Min=0,
 		.Max=105,
-		.current=480,
-		.new_angle=480,
+		.current=700,
+		.new_angle=1000,
 		.defta=1,
 };
 
 Pos_Servo ServoB={
 		.letter_Servo='B',
+		.htim=SERVO_A_HTIM1,
+		.pinEn = SERVO_A_CHANNEL2,
 		.Min=30,
 		.Max=95,
-		.current=0,
-		.new_angle=0,
+		.current=700,
+		.new_angle=1000,
 		.defta=1,
 };
 
 Pos_Servo ServoC={
 		.letter_Servo='C',
+		.htim=SERVO_A_HTIM1,
+		.pinEn = SERVO_A_CHANNEL3,
 		.Min=20,
 		.Max=80,
-		.current=0,
-		.new_angle=0,
+		.current=700,
+		.new_angle=1000,
 		.defta=1,
 };
 
 Pos_Servo ServoD={
 		.letter_Servo='D',
+		.htim=SERVO_A_HTIM4,
+		.pinEn = SERVO_A_CHANNEL1,
 		.Min=0,
 		.Max=110,
-		.current=0,
-		.new_angle=0,
+		.current=520,
+		.new_angle=1000,
 		.defta=1,
 };
 
 Pos_Servo ServoE={
 
 		.letter_Servo='E',
+		.htim=SERVO_A_HTIM4,
+		.pinEn = SERVO_A_CHANNEL2,
 		.Min=10,
 		.Max=140,
-		.current=0,
-		.new_angle=0,
+		.current=520,
+		.new_angle=1000,
 		.defta=1,
 };
 
 Pos_Servo ServoF={
 		.letter_Servo='F',
+		.htim=SERVO_A_HTIM4,
+		.pinEn = SERVO_A_CHANNEL3,
 		.Min=0,
 		.Max=145,
-		.current=0,
-		.new_angle=0,
+		.current=520,
+		.new_angle=1000,
 		.defta=1,
 };
 
@@ -135,10 +143,11 @@ uint8_t Parser_Buf(FIFO_Buf *buf);
 uint8_t Servo_Control(Pos_Servo *Pos_Servo);
 void setPWM(uint16_t value, Pos_Servo *Servo);
 uint16_t Transfer_To_The_Range(uint8_t angel , uint8_t Min, uint8_t Max);
+void Servo_Processing(Pos_Servo *Servo, uint8_t *v);
 
 
 void Read_Buf_Str(FIFO_Buf *buf, FIFO_One_str *str);
-void Read_Comand(FIFO_Buf *buf);
+//void Read_Comand(FIFO_Buf *buf);
 
 /* USER CODE END PFP */
 
@@ -156,47 +165,7 @@ void Read_Comand(FIFO_Buf *buf);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-	/*Mas_Servo[0].letter_Servo="A";
-	Mas_Servo[0].Min=0;
-	Mas_Servo[0].Max=120;
-	Mas_Servo[0].current=0;
-	Mas_Servo[0].new_angle=0;
-	Mas_Servo[0].defta=1;
 
-	Mas_Servo[1].letter_Servo="B";
-	Mas_Servo[1].Min=0;
-	Mas_Servo[1].Max=120;
-	Mas_Servo[1].current=0;
-	Mas_Servo[1].new_angle=0;
-	Mas_Servo[1].defta=1;
-
-    Mas_Servo[2].letter_Servo="C";
-	Mas_Servo[2].Min=0;
-	Mas_Servo[2].Max=120;
-	Mas_Servo[2].current=0;
-	Mas_Servo[2].new_angle=0;
-	Mas_Servo[2].defta=1;
-
-	Mas_Servo[3].letter_Servo="D";
-	Mas_Servo[3].Min=0;
-	Mas_Servo[3].Max=120;
-	Mas_Servo[3].current=0;
-	Mas_Servo[3].new_angle=0;
-	Mas_Servo[3].defta=1;
-
-	Mas_Servo[4].letter_Servo="E";
-	Mas_Servo[4].Min=0;
-	Mas_Servo[4].Max=120;
-	Mas_Servo[4].current=0;
-	Mas_Servo[4].new_angle=0;
-	Mas_Servo[4].defta=1;
-
-	Mas_Servo[5].letter_Servo="F";
-	Mas_Servo[5].Min=0;
-	Mas_Servo[5].Max=120;
-	Mas_Servo[5].current=0;
-	Mas_Servo[5].new_angle=0;
-	Mas_Servo[5].defta=1;*/
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -239,83 +208,38 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-    //ServoA.new_angle=60;
-
-    TIM1->CCR1 = 1500;
-   /* TIM1->CCR2 = 0;
-    TIM1->CCR3 = 0;
-    TIM1->CCR4 = 0;
-
-    TIM4->CCR1 = 0;
-    TIM4->CCR2 = 0;
-    TIM4->CCR3 = 0;
-    TIM4->CCR4 = 0;*/
-
-    uint8_t simfol=60;
   while (1)
   {
-
-	//HAL_UART_Receive_IT(&huart3,&simfol, 1);
-   //simfol++;
-	//if(simfol>60){
-
-	//}
 
 
    //получение строки из кольцевого буфера
 
 	if(buf.Chek>0){
-		//Read_Buf_Str(&buf,&One_str);
+		Read_Buf_Str(&buf,&One_str);
 	}
 
 	//парсер команды, запись команд в определенные структуры
 
-	//Read_Buf_Str(&buf, &str);
+
 	if(buf.Chek>0){
 	  Parser_Buf(&buf);
 	}
 
 	//обработка сервисных команд
 
-	//setPWM(ServoA.current, &ServoA);
 
 	//проверка наличия новых положения сервоприводов
 
-/*   	if(ServoA.current != ServoA.new_angle ){
-    		ServoA.current+ServoA.defta;
-    		setPWM(ServoA.current, &ServoA);
-    	}
-    	if(ServoA.current != ServoA.new_angle){
-
-    	  if(ServoA.current < ServoA.new_angle){
-
-    		ServoA.current+=ServoA.defta;
-    		if(ServoA.current>ServoA.new_angle){
-    			ServoA.current=ServoA.new_angle;
-    		}
-    		setPWM(ServoA.current, &ServoA);
-    		HAL_Delay(10);
-    	    }
-
-    	   else{
-
-    		 ServoA.current-=ServoA.defta;
-    		 if(ServoA.current<ServoA.new_angle){
-    		     ServoA.current=ServoA.new_angle;
-    		 }
-    		 setPWM(ServoA.current, &ServoA);
-    		 HAL_Delay(10);
-    	   }
-
-    	}*/
-    	//TIM1->CCR1 = 10;
+	Servo_Control(&ServoA);
+	Servo_Control(&ServoB);
+	Servo_Control(&ServoC);
+	Servo_Control(&ServoD);
+	Servo_Control(&ServoE);
+	Servo_Control(&ServoF);
 
 	//проверка для верхнего уровня
 
 
-
-	//Servo_Control(&buf, pwm_value, step);
-	//Servo_Control(&buf, pwm_value, step);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -397,7 +321,7 @@ static void MX_TIM1_Init(void)
     Error_Handler();
   }
   sConfigOC.OCMode = TIM_OCMODE_PWM2;
-  sConfigOC.Pulse = 1000;
+  sConfigOC.Pulse = 2000;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_LOW;
   sConfigOC.OCNPolarity = TIM_OCNPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
@@ -411,7 +335,6 @@ static void MX_TIM1_Init(void)
   {
     Error_Handler();
   }
-  sConfigOC.Pulse = 2000;
   if (HAL_TIM_PWM_ConfigChannel(&htim1, &sConfigOC, TIM_CHANNEL_3) != HAL_OK)
   {
     Error_Handler();
@@ -560,13 +483,23 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void Servo_Processing(Pos_Servo *Servo, uint8_t *angle)
+{
+	 if(Servo->Max <= *angle){
+		*angle=Servo->Max;
+	}
+	else if(Servo->Min >= *angle){
+		*angle=Servo->Min;
+	}
+	Servo->new_angle=Transfer_To_The_Range(*angle , 0, 180);
+	*angle=0;
+}
 uint8_t Parser_Buf(FIFO_Buf *buf){
 
 	buf->Chek=0;
 	uint8_t i = 0;
 	uint8_t v = 0;
-	while(buf->bufData[i-1] != '/r' && buf->bufData[i] != '/n' && i < buf->len ){
+	while((buf->bufData[i-1] != '\r') && (buf->bufData[i] != '\n') && (i < buf->len)){
 
 		switch (buf->bufData[i]) {
 
@@ -581,102 +514,31 @@ uint8_t Parser_Buf(FIFO_Buf *buf){
 			 case '8':
 			 case '9':
 					 v = v * 10 + (buf->bufData[i] - '0');
-
 				 break;
-
 			 case 'A':
 			 case 'a':
-
-				 if(ServoA.Max <= v){
-					v=ServoA.Max;
-				}
-				 else if(ServoA.Min >= v){
-					 v=ServoA.Min;
-				 }
-				 	 ServoA.new_angle=Transfer_To_The_Range(v , 0, 180);
-				 	 v=0;
+				 Servo_Processing(&ServoA, &v);
 				 break;
-
 			 case 'B':
 			 case 'b':
-				 if(ServoB.Max >= v){
-				 	v=ServoB.Max;
-				 	ServoA.new_angle=v;
-				 	v=0;
-				 }
-				 else if(ServoB.Min <= v){
-				 	v=ServoB.Min;
-				 	ServoB.new_angle=v;
-				 	v=0;
-				 }
-				 ServoB.new_angle=v;
-				 v=0;
+				 Servo_Processing(&ServoB, &v);
 				 break;
-
 			 case 'C':
 			 case 'c':
-				 if(ServoC.Max >= v){
-				    v=ServoC.Max;
-				 	ServoC.new_angle=v;
-				 	v=0;
-				 }
-				 else if(ServoC.Min <= v){
-				 	 v=ServoC.Min;
-				 	 ServoC.new_angle=v;
-				 	 v=0;
-				 }
-				 ServoC.new_angle=v;
-				 v=0;
+				 Servo_Processing(&ServoC, &v);
 				break;
-
 			 case 'D':
 			 case 'd':
-				 if(ServoD.Max >= v){
-				 	v=ServoD.Max;
-				 	ServoD.new_angle=v;
-				 	v=0;
-				 }
-				 else if(ServoD.Min <= v){
-				 	v=ServoD.Min;
-				 	ServoD.new_angle=v;
-				 	v=0;
-				 	}
-				 	ServoD.new_angle=v;
-				 	v=0;
+				 Servo_Processing(&ServoD, &v);
 				break;
-
 			 case 'E':
 			 case 'e':
-				 if(ServoE.Max >= v){
-				 	v=ServoE.Max;
-				 	ServoE.new_angle=v;
-				 	v=0;
-				 }
-				 else if(ServoE.Min <= v){
-				 	v=ServoE.Min;
-				 	ServoE.new_angle=v;
-				 	v=0;
-				 }
-				 	ServoE.new_angle=v;
-				 	v=0;
+				 Servo_Processing(&ServoE, &v);
 				break;
-
 			 case 'F':
 			 case 'f':
-				 if(ServoF.Max >= v){
-				 	v=ServoF.Max;
-				 	ServoF.new_angle=v;
-				 	v=0;
-				 	}
-				 else if(ServoF.Min <= v){
-				 	v=ServoF.Min;
-				 	ServoF.new_angle=v;
-				 	v=0;
-				 }
-				 	ServoF.new_angle=v;
-				 	v=0;
+				 Servo_Processing(&ServoF, &v);
 			 	break;
-
 			 default:
 				// HAL_UART_Transmit_IT(&huart3, &p, 1);
 				 break;
@@ -752,31 +614,34 @@ void Read_Buf_Str(FIFO_Buf *buf,FIFO_One_str *str){
 uint8_t Servo_Control(Pos_Servo *Servo){
 
 
-	uint16_t new_interval = Transfer_To_The_Range(Servo->new_angle , 0, 180);
-	uint16_t current_interval = Transfer_To_The_Range(Servo->current , 0, 180);
+	if(Servo->current != Servo->new_angle ){
 
-	     if(Servo->current < Servo->new_angle){
+	    		Servo->current+=Servo->defta;
+	    		setPWM(Servo->current, Servo);
+	    	}
+	    	if(Servo->current != Servo->new_angle){
 
-	        while( current_interval  < new_interval){
+	    	  if(Servo->current < Servo->new_angle){
 
-	           current_interval += Servo->defta;
-		      // setPWM(current_interval, Servo);
-		       HAL_Delay(10);
-	        }
+	    		Servo->current+=Servo->defta;
+	    		if(Servo->current>Servo->new_angle){
+	    			Servo->current=Servo->new_angle;
+	    		}
+	    		setPWM(Servo->current, Servo);
+	    		HAL_Delay(10);
+	    	    }
 
-	        Servo->current = Servo->new_angle;
-	     }
+	    	   else{
 
-	     else{
+	    		 Servo->current-=Servo->defta;
+	    		 if(Servo->current<Servo->new_angle){
+	    		     Servo->current=Servo->new_angle;
+	    		 }
+	    		 setPWM(Servo->current, Servo);
+	    		 HAL_Delay(10);
+	    	   }
 
-	    	 while(current_interval > new_interval){
-	    	    current_interval-= Servo->defta;
-	    	    setPWM(current_interval, Servo);
-	    	    HAL_Delay(10);
-	    	 }
-
-	    	 Servo->current = Servo->new_angle;
-	     }
+	    	}
 
 	  return 0;
 }
@@ -803,7 +668,7 @@ void setPWM(uint16_t value, Pos_Servo *Servo)
 	}
 
 	////TIM1->CCR1 = value;
-	TIM1->CCR2 = value;
+	//TIM1->CCR2 = value;
 	//TIM1->CCR3 = value;
 	//TIM1->CCR4 = value;
 
@@ -815,7 +680,7 @@ void setPWM(uint16_t value, Pos_Servo *Servo)
 
 uint16_t Transfer_To_The_Range(uint8_t angle , uint8_t Min, uint8_t Max){
 
-	 return 480 + ((2000 - 480) * (100 * (angle - Min) / (Max - Min))) / 100;
+	 return 520 + ((2150 - 520) * (100 * (angle - Min) / (Max - Min))) / 100;
 }
 
 /* USER CODE END 4 */

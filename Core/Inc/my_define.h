@@ -20,8 +20,14 @@
 extern "C" {
 #endif
 
-#define SERVO_A_HTIM  (( TIM_HandleTypeDef *) &htim1)
-#define SERVO_A_CHANNEL TIM_CHANNEL_1
+#define SERVO_A_HTIM1  (( TIM_HandleTypeDef *) &htim1)
+#define SERVO_A_HTIM4  (( TIM_HandleTypeDef *) &htim4)
+
+#define SERVO_A_CHANNEL1 TIM_CHANNEL_1
+#define SERVO_A_CHANNEL2 TIM_CHANNEL_2
+#define SERVO_A_CHANNEL3 TIM_CHANNEL_3
+#define SERVO_A_CHANNEL4 TIM_CHANNEL_4
+
 
 typedef struct __FIFO_Buf{
     uint8_t len;
